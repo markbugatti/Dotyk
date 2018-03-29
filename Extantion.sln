@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extantion", "VSIXProject1\Extantion.csproj", "{896EBCBA-DDF7-4D56-97A0-142565FF57D3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		app|Any CPU = app|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{896EBCBA-DDF7-4D56-97A0-142565FF57D3}.app|Any CPU.ActiveCfg = app|Any CPU
+		{896EBCBA-DDF7-4D56-97A0-142565FF57D3}.app|Any CPU.Build.0 = app|Any CPU
+		{896EBCBA-DDF7-4D56-97A0-142565FF57D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{896EBCBA-DDF7-4D56-97A0-142565FF57D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{896EBCBA-DDF7-4D56-97A0-142565FF57D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{896EBCBA-DDF7-4D56-97A0-142565FF57D3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3F761C72-02A3-480E-BEFE-059B1782B931}
+	EndGlobalSection
+EndGlobal
