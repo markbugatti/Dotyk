@@ -6,14 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
-using Dotyk.Store.Client;
 using Dotyk.Store.Deployment.Installer;
 using Dotyk.Store.Deployment.Packaging;
-using Dotyk.Store.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Dotyk.Store.Deployment;
 
-namespace Dotyk.Store.Deployment
+namespace VSIXProject1/*Dotyk.Store.Deployment*/
 {
     public class DeployOptions
     {
@@ -170,7 +169,7 @@ namespace Dotyk.Store.Deployment
 
             using (var packageStream = File.OpenRead(options.PackagePath))
             {
-                await PushPackage(options, logger, packageStream);
+                //await PushPackage(options, logger, packageStream);
             }
         }
 
@@ -179,58 +178,58 @@ namespace Dotyk.Store.Deployment
             return new ConsoleLogger("Publisher", (m, l) => l >= options.LogVerbosity, true);
         }
 
-        private static async Task PushPackage(PushOption options, ILogger logger, Stream packageStream)
-        {
-            packageStream.Seek(0, SeekOrigin.Begin);
+        //private static async Task PushPackage(PushOption options, ILogger logger, Stream packageStream)
+        //{
+        //    packageStream.Seek(0, SeekOrigin.Begin);
 
-            var client = new StoreClient(
-                            new StoreClientOptions
-                            {
-                                ServerUrl = new Uri(options.ServerUrl)
-                            });
+        //    var client = new StoreClient(
+        //                    new StoreClientOptions
+        //                    {
+        //                        ServerUrl = new Uri(options.ServerUrl)
+        //                    });
 
-            using (logger.BeginScope("Publishing"))
-            {
-                try
-                {
-                    try
-                    {
-                        await client.Login(new LoginViewModel
-                        {
-                            Email = options.Login,
-                            Password = options.Password
-                        });
-                    }
-                    catch
-                    {
-                        if (!options.Register) throw;
+        //    using (logger.BeginScope("Publishing"))
+        //    {
+        //        try
+        //        {
+        //            try
+        //            {
+        //                await client.Login(new LoginViewModel
+        //                {
+        //                    Email = options.Login,
+        //                    Password = options.Password
+        //                });
+        //            }
+        //            catch
+        //            {
+        //                if (!options.Register) throw;
 
-                        logger.LogInformation("Registering new user");
+        //                logger.LogInformation("Registering new user");
 
-                        await client.Register(new RegisterViewModel
-                        {
-                            Email = options.Login,
-                            Password = options.Password
-                        });
+        //                await client.Register(new RegisterViewModel
+        //                {
+        //                    Email = options.Login,
+        //                    Password = options.Password
+        //                });
 
-                        await client.Login(new LoginViewModel
-                        {
-                            Email = options.Login,
-                            Password = options.Password
-                        });
-                    }
+        //                await client.Login(new LoginViewModel
+        //                {
+        //                    Email = options.Login,
+        //                    Password = options.Password
+        //                });
+        //            }
 
-                    await client.SubmitPackage(packageStream);
+        //            await client.SubmitPackage(packageStream);
 
-                    logger.LogInformation("Package published");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(new EventId(), ex, "Failed to publish package");
-                    throw;
-                }
-            }
-        }
+        //            logger.LogInformation("Package published");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            logger.LogError(new EventId(), ex, "Failed to publish package");
+        //            throw;
+        //        }
+        //    }
+        //}
 
         private static async Task ExecuteVerb(InstallOption io)
         {

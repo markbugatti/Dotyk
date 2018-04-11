@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h" />
+
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h" />
+
+  <!--The Commands section is where commands, menus, and menu groups are defined.
+      This section uses a Guid to identify the package that provides the command defined inside it. -->
+  <Commands package="guidCommand1Package">
+
+    <Menus>
+      <Menu guid="guid_Menu" id="id_DeployMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+        <Strings>
+          <ButtonText>Dotyk</ButtonText>
+          <CommandName>Dotyk</CommandName>
+        </Strings>
+      </Menu>
+
+      <Menu guid="guid_OptionWindow" id="id_toolbar" priority="0x0000" type="ToolWindowToolbar">
+        <Parent guid="guid_OptionWindow" id="id_toolbar" />
+        <Strings>
+          <ButtonText>Tool Window Toolbar</ButtonText>
+          <CommandName>Tool Window Toolbar</CommandName>
+        </Strings>
+      </Menu>
+
+    </Menus>
+
+    <!-- menu groups -->
+    <Groups>
+      <Group guid="guid_Menu" id="id_CommandGroup" priority="0x0600">
+        <Parent guid="guid_Menu" id="id_DeployMenu" />
+      </Group>
+
+      <Group guid="guid_Menu" id="id_SettingUpGroup" priority="0x0600">
+        <Parent guid="guid_Menu" id="id_DeployMenu" />
+      </Group>
+
+      <Group guid="guid_OptionWindow" id="id_toolbarGroup" priority="0x0000">
+        <Parent guid="guid_OptionWindow" id="id_toolbar" />
+      </Group>
+    </Groups>
+
+    <!-- Buttons section -->
+    <Buttons>
+      <Button guid="guid_Menu" id="id_DeployBtn" priority="0x0100" type="Button">
+        <Parent guid="guid_Menu" id="id_CommandGroup" />
+        <!--<Icon guid="guidImages4" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Deploy</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_ToolWindow1" id="id_ToolWindow1" priority="0x0100" type="Button">
+        <Parent guid="guid_Menu" id="id_SettingUpGroup" />
+        <Icon guid="guidImages5" id="bmpPic1" />
+        <Strings>
+          <ButtonText>ToolWindow1</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guid_OptionWindow" id="id_OptionBtn" priority="0x0100" type="Button">
+        <Parent guid="guid_Menu" id="id_SettingUpGroup" />
+         <Icon guid="guidImages6" id="bmpPic1" />
+         <Strings>
+          <ButtonText>Options</ButtonText>
+         </Strings>
+      </Button>
+
+      <!--<Button guid="guid_OptionWindow" id="id_PackWindow" priority="0x0100" type="Button">
+        <Parent guid="guid_OptionWindow" id="id_toolbarGroup"/>
+        <Icon guid="guidImages" id="bmpPicSearch" />
+        <Strings>
+          <ButtonText>Pack</ButtonText>
+        </Strings>
+      </Button>-->
+
+    </Buttons>
+
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\Command1.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages1" href="Resources\Command2.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages2" href="Resources\Command3.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages3" href="Resources\Command2.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages4" href="Resources\OptionsWindowCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages5" href="Resources\ToolWindow1Command.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages6" href="Resources\OptioinsWindowCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <!-- This is the package guid. -->
+    <GuidSymbol name="guidCommand1Package" value="{4e6c34e8-a1dc-4116-9c56-c14adcb92015}" />
+
+    <!-- This is the guid used to group the menu commands together -->
+    <GuidSymbol name="guid_Menu" value="{7d9e0309-a18d-4cbd-935b-37b10720c19b}">
+      <IDSymbol name="id_DeployMenu" value="0x1020" />
+      <IDSymbol name="id_CommandGroup" value="0x1021" />
+      <IDSymbol name="id_SettingUpGroup" value="0x1022" />
+      <IDSymbol name="id_DeployBtn" value="0x1023" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guid_OptionWindow" value="{37107dd7-b549-4267-8160-4bfb2fd06a14}">
+      <IDSymbol name="id_OptionBtn" value="0x1020" />
+      <IDSymbol name="id_toolbar" value="0x1021" />
+      <IDSymbol name="id_toolbarGroup" value="0x1022" />
+      <IDSymbol name="id_PackWindow" value="0x1023" />
+
+    </GuidSymbol>
+
+    <GuidSymbol value="{a44610e7-0453-422c-a5b0-3cb0947480a7}" name="guid_ToolWindow1">
+      <IDSymbol name="id_ToolWindow1" value="0x1024" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{56f9ba0f-7bf0-405c-83af-69f22f9e665b}">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+
+    <GuidSymbol value="{a732355f-edc3-4c49-ba83-d8f9c4191979}" name="guidImages1">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+
+    <GuidSymbol value="{be97f0c3-2aac-4442-ad23-e9adc921cc3e}" name="guidImages2">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+
+    <GuidSymbol value="{b54a6302-7c3b-4840-bc0d-808670181c8e}" name="guidCommand1PackageCmdSet1">
+      <!--<IDSymbol value="4128" name="MyMenuGroup" />-->
+      <IDSymbol value="256" name="CommandPush" />
+    </GuidSymbol>
+
+    <GuidSymbol value="{4ed3c8d6-f8dc-44e2-bba7-622f2b7d56dd}" name="guidImages3">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+
+    <GuidSymbol value="{0606f980-d256-45c5-9157-88982b3ef1a4}" name="guidImages4">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  
+  
+    <GuidSymbol value="{ea9b1263-b43b-405a-ad4c-b24d8b79030c}" name="guidImages5">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  
+    <GuidSymbol value="{f6c4fc04-d413-4e1e-8b42-5f0c8151aa6d}" name="guidCommandDeployPackageCmdSet">
+      <IDSymbol value="256" name="cmdidOptioinsWindowCommand" />
+    </GuidSymbol>
+  
+    <GuidSymbol value="{8fc18a26-8c3f-48c5-a97a-892a55683265}" name="guidImages6">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

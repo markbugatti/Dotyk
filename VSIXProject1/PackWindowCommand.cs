@@ -9,17 +9,17 @@ namespace VSIXProject1
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class Command2
+    internal sealed class ToolWindow1Command
     {
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = 256;
+        public const int CommandId = 0x1024;
 
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("b54a6302-7c3b-4840-bc0d-808670181c8e");
+        public static readonly Guid CommandSet = new Guid("a44610e7-0453-422c-a5b0-3cb0947480a7");
 
         /// <summary>
         /// VS Package that provides this command, not null.
@@ -27,11 +27,11 @@ namespace VSIXProject1
         private readonly Package package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Command2"/> class.
+        /// Initializes a new instance of the <see cref="ToolWindow1Command"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        private Command2(Package package)
+        private ToolWindow1Command(Package package)
         {
             if (package == null)
             {
@@ -44,7 +44,7 @@ namespace VSIXProject1
             if (commandService != null)
             {
                 var menuCommandID = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(this.MenuItemCallback, menuCommandID);
+                var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandID);
                 commandService.AddCommand(menuItem);
             }
         }
@@ -52,7 +52,7 @@ namespace VSIXProject1
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static Command2 Instance
+        public static ToolWindow1Command Instance
         {
             get;
             private set;
@@ -75,20 +75,27 @@ namespace VSIXProject1
         /// <param name="package">Owner package, not null.</param>
         public static void Initialize(Package package)
         {
-            Instance = new Command2(package);
+            Instance = new ToolWindow1Command(package);
         }
 
         /// <summary>
-        /// This function is the callback used to execute the command when the menu item is clicked.
-        /// See the constructor to see how the menu item is associated with this function using
-        /// OleMenuCommandService service and MenuCommand class.
+        /// Shows the tool window when the menu item is clicked.
         /// </summary>
-        /// <param name="sender">Event sender.</param>
-        /// <param name="e">Event args.</param>
-        private void MenuItemCallback(object sender, EventArgs e)
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
+        private void ShowToolWindow(object sender, EventArgs e)
         {
-            FormPush f = new FormPush();
-            f.Show();
+            // Get the instance number 0 of this tool window. This window is single instance so this instance
+            // is actually the only one.
+            // The last flag is set to true so that if the tool window does not exists it will be created.
+            ToolWindowPane window = this.package.FindToolWindow(typeof(PackWindow), 0, true);
+            if ((null == window) || (null == window.Frame))
+            {
+                throw new NotSupportedException("Cannot create tool window");
+            }
+
+            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
     }
 }

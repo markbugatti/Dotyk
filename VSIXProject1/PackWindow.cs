@@ -15,20 +15,20 @@
     /// implementation of the IVsUIElementPane interface.
     /// </para>
     /// </remarks>
-    [Guid("f55832e9-595e-46c6-86ec-f9939cfb4e07")]
-    public class OptionsWindow : ToolWindowPane
+    [Guid("5b7c4217-9e96-4301-99c5-185449464836")]
+    public class ToolWindow1 : ToolWindowPane
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OptionsWindow"/> class.
+        /// Initializes a new instance of the <see cref="ToolWindow1"/> class.
         /// </summary>
-        public OptionsWindow() : base(null)
+        public ToolWindow1() : base(null)
         {
-            this.Caption = "Dotyk Options";
+            this.Caption = "ToolWindow1";
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            this.Content = new OptioinsWindowControl();
+            this.Content = new ToolWindow1Control();
         }
     }
 }

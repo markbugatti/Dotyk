@@ -9,13 +9,14 @@ using System.Management.Automation;
 using System.IO;
 using System.Windows;
 using System.Xml;
+using System.Diagnostics;
 
 namespace VSIXProject1
 {
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class Command3
+    internal sealed class CommandDeploy
     {
         /// <summary>
         /// Command ID.
@@ -33,11 +34,11 @@ namespace VSIXProject1
         private readonly Package package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Command3"/> class.
+        /// Initializes a new instance of the <see cref="CommandDeploy"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        private Command3(Package package)
+        private CommandDeploy(Package package)
         {
             if (package == null)
             {
@@ -58,7 +59,7 @@ namespace VSIXProject1
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static Command3 Instance
+        public static CommandDeploy Instance
         {
             get;
             private set;
@@ -81,7 +82,7 @@ namespace VSIXProject1
         /// <param name="package">Owner package, not null.</param>
         public static void Initialize(Package package)
         {
-            Instance = new Command3(package);
+            Instance = new CommandDeploy(package);
         }
 
         private Project GetCurrentProject(Projects projects, string targetProjName)
@@ -107,26 +108,70 @@ namespace VSIXProject1
         {
             DTE2 dte = (DTE2)this.ServiceProvider.GetService(typeof(DTE));
             EnvDTE.Project project = null;
-            // имя текущего проета в решении
+
+            var targetProjName = dte.Solution.Properties.Item("StartupProject").Value.ToString();
+            project = GetCurrentProject(dte.Solution.Projects, targetProjName);
+            Configuration conf = project.ConfigurationManager.ActiveConfiguration;
+
             try
             {
-                var targetProjName = dte.Solution.Properties.Item("StartupProject").Value.ToString();
-                project = GetCurrentProject(dte.Solution.Projects, targetProjName);
-                Configuration conf = project.ConfigurationManager.ActiveConfiguration;
                 // текущий путь
                 string str = conf.Properties.Item("OutputPath").Value.ToString();
-                //string str1 = project.FullName;
-                //str += @"AppX\AppxManifest.xml";
-                var path = Path.Combine(Path.GetDirectoryName(project.FullName), str, @"AppxManifest.xml");
+                var path = Path.Combine(Path.GetDirectoryName(project.FullName), str, @"Appx\AppxManifest.xml");
                 XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(path);
-                XmlNodeList xmlNodes = xmlDocument.GetElementsByTagName("Package");
-                
-                    foreach (XmlNode xmlNode in xmlNodes.Item(0).ChildNodes)
-                    {
 
-                        if (xmlNode.Name.Equals("Applications"))
+                try
+                {
+                    xmlDocument.Load(path);
+                }
+                catch
+                {
+                    // vs deploy
+                    string command = "\"" + @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv" + "\" \""
+                    + @"C:\Users\Mark\source\repos\Kodisoft\UWPTest\App1\App1.sln" + "\" " +
+                    "/deploy \"" + conf.ConfigurationName + "|" + conf.PlatformName + "\" /project " + "\"" + @"App1\App1.csproj" + "\" " + "/projectconfig \"" + conf.ConfigurationName + "|" + conf.PlatformName + "\"";
+
+                    var process = new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo
                         {
+                            FileName = "cmd.exe",
+                            RedirectStandardInput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = false
+                        }
+                    };
+                    process.Start();
+
+                    using (StreamWriter pWriter = process.StandardInput)
+                    {
+                        if (pWriter.BaseStream.CanWrite)
+                        {
+                            pWriter.WriteLine(command);
+                        }
+                    }
+                    process.WaitForExit();
+
+                    xmlDocument.Load(path);
+                }
+
+                XmlNodeList xmlNodes = xmlDocument.GetElementsByTagName("Package");
+                foreach (XmlNode xmlNode in xmlNodes.Item(0).ChildNodes)
+                {
+                    if (xmlNode.Name.Equals("Applications"))
+                    {
+                        if (xmlNode.ChildNodes.Count == 1)
+                        {
+                            // version up
+                            foreach (XmlNode item in xmlNodes.Item(0).ChildNodes)
+                            {
+                                if (item.Name.Equals("Identity"))
+                                {
+                                    var version = Version.Parse(item.Attributes["Version"].Value.ToString());
+                                    item.Attributes["Version"].Value = new Version(version.Major, version.Minor, version.Build, version.Revision + 1).ToString();
+                                }
+                            }
+                            // change manifest
                             var app = xmlNode.FirstChild as XmlElement;
                             var id = app?.GetAttribute("id") as string;
                             for (int i = 0; i < 9; i++)
@@ -138,29 +183,29 @@ namespace VSIXProject1
                                 xmlNode.AppendChild(copyApp);
                             }
 
+                            xmlDocument.Save(path);
+                            // custom deploy
+                            using (PowerShell PowerShellInstance = PowerShell.Create())
+                            {
+                                PowerShellInstance.AddCommand("Add-AppxPackage").AddParameter("register").AddArgument(path);
+                                var result = PowerShellInstance.Invoke();
+                                Debug.WriteLine(result);
+                            }
+                            MessageBox.Show("Success deployed");
                         }
+                        else
+                        {
+                            MessageBox.Show("Already deployed");
+                        }
+                        break;
+                    }
                 }
-                xmlDocument.Save(path);
-
-                using (PowerShell PowerShellInstance = PowerShell.Create())
-                {
-                    PowerShellInstance.AddCommand("Add-AppxPackage");
-                    PowerShellInstance.AddParameter("register");
-                    PowerShellInstance.AddArgument(path);
-                    PowerShellInstance.Invoke();
-                }
-
-                MessageBox.Show("Success deployed");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("error: " + ex.Message);
             }
-
-            //  FormOptions f = new FormOptions();
-            //            f.Show();
-
-
         }
     }
 }
+

@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Globalization;
-using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
 
 namespace VSIXProject1
 {
@@ -20,11 +18,12 @@ namespace VSIXProject1
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = 4130;
+        public const int CommandId = 0x1020;
+
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("7d9e0309-a18d-4cbd-935b-37b10720c19b");
+        public static readonly Guid CommandSet = new Guid("37107dd7-b549-4267-8160-4bfb2fd06a14");
 
         /// <summary>
         /// VS Package that provides this command, not null.
@@ -94,15 +93,28 @@ namespace VSIXProject1
             }
             return null;
         }
-        private void FullConfs(OptionsWindowControl optionsWindow, Project project, string confName)
+        private void FillConfs(OptioinsWindowControl OptioinsWindow, Project project)
         {
-            optionsWindow.ComboBoxConf.Items.Clear();
+            OptioinsWindow.ComboBoxConf.Items.Clear();
             foreach (Configuration item in project.ConfigurationManager)
             {
-                optionsWindow.ComboBoxConf.Items.Add(item.ConfigurationName);
+                bool exist = false;
+                foreach (string text in OptioinsWindow.ComboBoxConf.Items)
+                {
+                    if (item.ConfigurationName == text)
+                    {
+                        exist = true;
+                        break;
+                    }
+                }
+                if(!exist)
+                {
+                    OptioinsWindow.ComboBoxConf.Items.Add(item.ConfigurationName);
+                }
             }
-            optionsWindow.ComboBoxConf.SelectedValue = confName;
+            OptioinsWindow.ComboBoxConf.SelectedValue = project.ConfigurationManager.ActiveConfiguration.ConfigurationName;
         }
+
         /// <summary>
         /// Shows the tool window when the menu item is clicked.
         /// </summary>
@@ -110,45 +122,36 @@ namespace VSIXProject1
         /// <param name="e">The event args.</param>
         private void ShowToolWindow(object sender, EventArgs e)
         {
-            // Get the instance number 0 of this tool window. This window is single instance so this instance
-            // is actually the only one.
-            // The last flag is set to true so that if the tool window does not exists it will be created.
-            ToolWindowPane window = this.package.FindToolWindow(typeof(OptionsWindow), 0, true);
-            if ((null == window) || (null == window.Frame))
+            DTE2 dte = (DTE2)this.ServiceProvider.GetService(typeof(DTE));
+            EnvDTE.Project project = null;
+            // имя текущего проета в решении
+            try
             {
-                throw new NotSupportedException("Cannot create tool window");
-            }
-            // елси окно создалось
-            else
-            {
-                IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-                Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
-                OptionsWindowControl optionsWindow = window.Content as OptionsWindowControl;
-                DTE2 dte = (DTE2)this.ServiceProvider.GetService(typeof(DTE));
-                EnvDTE.Project project = null;
-                // имя текущего проета в решении
                 var targetProjName = dte.Solution.Properties.Item("StartupProject").Value.ToString();
-                try
+                // получить проект по имени
+                project = GetCurrentProject(dte.Solution.Projects, targetProjName);
+                // Get the instance number 0 of this tool window. This window is single instance so this instance
+                // is actually the only one.
+                // The last flag is set to true so that if the tool window does not exists it will be created.
+                ToolWindowPane window = this.package.FindToolWindow(typeof(OptionsWindow), 0, true);
+                if ((null == window) || (null == window.Frame))
                 {
-                    // получить проект по имени
-                    project = GetCurrentProject(dte.Solution.Projects, targetProjName);
-                    Configuration conf = project.ConfigurationManager.ActiveConfiguration;
-                    string platformTarget = conf.Properties.Item("PlatformTarget").Value.ToString();
-                    var confName = conf.ConfigurationName;
+                    throw new NotSupportedException("Cannot create tool window");
+                }
+                OptioinsWindowControl OptioinsWindow = window.Content as OptioinsWindowControl;
+                // заполнить Configuration name
+                FillConfs(OptioinsWindow, project);
+                // отобразить окно
+                //window.ToolBarLocation = (int)VSTWT_LOCATION.VSTWT_RIGHT;
+                IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+                //windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, new Guid("4e6c34e8-a1dc-4116-9c56-c14adcb92015"), 10, 10, 60, 60);
+                Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+            }
+            catch
+            {
+                MessageBox.Show("Не выбран проект");
+            }
 
-                    //if (System.IO.Directory.Exists(Path.Combine("bin", platformTarget, confName)))
-                    //    MessageBox.Show(conf.Properties.Item("PlatformTarget").Value.ToString());
-                    //FullConfs(optionsWindow, project, confName);
-                    // получить путь к Appx\manifest;
-                    string str = conf.Properties.Item("OutputPath").Value.ToString();
-                    str += @"AppX\AppxManifest.xml";
-                    
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("error: " + ex.Message.ToString());
-                }
-            }  
         }
     }
 }
